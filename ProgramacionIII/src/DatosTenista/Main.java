@@ -22,6 +22,10 @@ public class Main {
 	    }
 	    
 	    System.out.println(historia.toString());
+	    System.out.println(historia.getTenistas().toString());
+	    System.out.println(historia.getResultados().toString());
+	    System.out.println(historia.getTorneoPorNombre().toString());
+	    System.out.println(historia.getTorneosPorCodigo().toString());
 
 	}
 
