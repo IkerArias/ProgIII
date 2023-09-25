@@ -22,9 +22,9 @@ import javax.swing.JTextField;
  * @author andoni.eguiluz @ ingenieria.deusto.es
  */
 public class VentanaConfirmacionLenta {
-	
-	private static Thread hilo;
 
+	private static Thread hilo;
+	
 		private static Random r = new Random();
 	// Este método simula un proceso que tarda un tiempo en hacerse (entre 5 y 10 segundos)
 	private static void procesoConfirmar() {
@@ -34,65 +34,70 @@ public class VentanaConfirmacionLenta {
 	}
 	
 	public static void main(String[] args) {
-		// TODO Desarrollar la clase de acuerdo a los comentarios de la cabecera
-		// Comentario de prueba
-		// Comentario 2	
-		
 		verHilos( "Antes de ventana" );
-		
-		JFrame ventana = new JFrame();
-		ventana.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		ventana.setSize(200,100);
-		ventana.setLocation(20000,0);
-		ventana.setVisible(true);
-		
-		JPanel panelCentral = new JPanel();
-		JTextField txtUsuario = new JTextField("Usuario");
-		panelCentral.add(txtUsuario);
-		ventana.add(panelCentral, BorderLayout.NORTH);
-		
-		JButton btnAceptar = new JButton("Aceptar");
-		ventana.add(btnAceptar);
-		
-		btnAceptar.addActionListener(new ActionListener() {
+		JFrame vent = new JFrame();
+		// vent.setLayout( new BorderLayout() );
+		vent.setDefaultCloseOperation( JFrame.DISPOSE_ON_CLOSE );
+		vent.setSize( 200, 100 );
+		vent.setLocation( 2000, 0 );
 
+		JPanel pCentral = new JPanel();
+		JTextField textFieldUsuario = new JTextField( "Usuario:" );
+		pCentral.add( textFieldUsuario );
+		vent.add( pCentral, BorderLayout.NORTH );
+		
+		JButton bAceptar = new JButton( "Aceptar" );
+		vent.add( bAceptar, BorderLayout.SOUTH );
+
+		bAceptar.addActionListener( new ActionListener() {
+			// Truco de Java: las variables externas que uses aquí se copian en la clase interna
+			// JButton bAceptar = valor bAceptar de la clase externa
+			// A cambio, tiene que ser final (no puede cambiar de valor)
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				btnAceptar.setEnabled(false);
-				System.out.println("Pulsando el boton");
-				btnAceptar.setForeground(Color.RED);
-				
+				bAceptar.setEnabled( false );
+				System.out.println( "Pulsado botón" );
+				bAceptar.setForeground( Color.RED );
 				hilo = new Thread() {
+					@Override
 					public void run() {
-						System.out.println("Inciio proceso");
-						System.out.println(hilo.isAlive() + " " + hilo.getState());
+						System.out.println( "Inicio proceso" );
+						System.out.println( hilo.isAlive() + " " + hilo.getState() );
 						procesoConfirmar();
-						System.out.println("Fin proceso");
-						btnAceptar.setEnabled(true);
-						
+						System.out.println( "Fin proceso" );
+						bAceptar.setEnabled( true );
 					}
 				};
+				// Podría hacerse impl Runnable
+//				Thread hilo2 = new Thread( new Runnable() {
+//					@Override
+//					public void run() {
+//						procesoConfirmar();
+//					}
+//				});
+				// procesoConfirmar(); en vez de hacerlo desde el escuchador que lo haga el hilo
+				// hilo.run();
 				
-				hilo.start();
+				hilo.start(); // Magia -- se CREA un nuevo hilo de ejecución y se le pasa la tarea de run()
 				
-				}	
-			});
+			}
+		});
 		
-		System.out.println("Fin");
-		verHilos("Despues de ventana");	
-}
+		vent.setVisible( true );
+		System.out.println( "Fin" );
+		verHilos( "Después de ventana" );
+	}
 	
-	private static void verHilos(String mensaje) {
-		System.out.println( mensaje);
+	private static void verHilos( String mensaje ) {
+		System.out.println( mensaje );
 		for (Thread hilo : Thread.getAllStackTraces().keySet()) {
-			System.out.println(" " + hilo.getName() + " " + hilo.isDaemon());
+			System.out.println( "  " + hilo.getName() + " " + hilo.isDaemon() );
 		}
 	}
-	
-	private static class MiHilo extends Thread {
-		
-	}
-	
+
+	// Podría hacerse clase interna con nombre (muy similar a interna anónima)
+	// private static class MiHilo extends Thread {
+	// 	
+	// }
 	
 }
