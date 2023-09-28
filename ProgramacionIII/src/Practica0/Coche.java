@@ -1,101 +1,106 @@
 package Practica0;
 
+/** Clase para definir instancias l�gicas de coches con posici�n, direcci�n y velocidad.
+ * @author Andoni Egu�luz
+ * Facultad de Ingenier�a - Universidad de Deusto (2014)
+ */
 public class Coche {
+	protected double miVelocidad;  // Velocidad en pixels/segundo
+	protected double miDireccionActual;  // Direcci�n en la que estoy mirando en grados (de 0 a 360)
+	protected double posX;  // Posici�n en X (horizontal)
+	protected double posY;  // Posici�n en Y (vertical)
+	protected String piloto;  // Nombre de piloto
 	
-	private double velocidad;
-	private double direccionActual;
-	private double posX;
-	private double posY;
-	private String nombrePiloto;
+	// Constructores
 	
-	//Getters y Setters
+	public Coche() {
+		miVelocidad = 0;
+		miDireccionActual = 0;
+		posX = 300;
+		posY = 300;
+	}
+	
+	/** Devuelve la velocidad actual del coche en p�xeles por segundo
+	 * @return	velocidad
+	 */
 	public double getVelocidad() {
-		return velocidad;
+		return miVelocidad;
 	}
-	public void setVelocidad(double velocidad) {
-		this.velocidad = velocidad;
+
+	/** Cambia la velocidad actual del coche
+	 * @param miVelocidad
+	 */
+	public void setVelocidad( double miVelocidad ) {
+		this.miVelocidad = miVelocidad;
 	}
+
 	public double getDireccionActual() {
-		return direccionActual;
+		return miDireccionActual;
 	}
-	public void setDireccionActual(double direccionActual) {
-		this.direccionActual = direccionActual;
+
+	public void setDireccionActual( double dir ) {
+		if (dir < 0) dir = 360 + dir;
+		if (dir > 360) dir = dir - 360;
+		miDireccionActual = dir;
 	}
+
 	public double getPosX() {
 		return posX;
 	}
-	public void setPosX(double posX) {
-		this.posX = posX;
-	}
+
 	public double getPosY() {
 		return posY;
 	}
-	public void setPosY(double posY) {
-		this.posY = posY;
-	}
-	public String getNombrePiloto() {
-		return nombrePiloto;
-	}
-	public void setNombrePiloto(String nombrePiloto) {
-		this.nombrePiloto = nombrePiloto;
+
+	public void setPosicion( double posX, double posY ) {
+		setPosX( posX );
+		setPosY( posY );
 	}
 	
-	//Constructores
-	
-	public Coche(double velocidad, double direccionActual, double posX, double posY, String nombrePiloto) {
-		super();
-		this.velocidad = velocidad;
-		this.direccionActual = direccionActual;
-		this.posX = posX;
-		this.posY = posY;
-		this.nombrePiloto = nombrePiloto;
+	public void setPosX( double posX ) {
+		this.posX = posX; 
 	}
 	
-	public Coche() {
-		super();
-		this.velocidad = 0.0;
-		this.direccionActual = 0.0;
-		this.posX = 0.0;
-		this.posY = 0.0;
-		this.nombrePiloto = "";
+	public void setPosY( double posY ) {
+		this.posY = posY; 
 	}
 	
-	//Metodo toString
+	public String getPiloto() {
+		return piloto;
+	}
+
+	public void setPiloto(String piloto) {
+		this.piloto = piloto;
+	}
+
+
+	/** Cambia la velocidad actual del coche
+	 * @param aceleracion	Incremento/decremento de la velocidad en pixels/segundo
+	 */
+	public void acelera( double aceleracion ) {
+		miVelocidad = miVelocidad + aceleracion;
+	}
+	
+	/** Cambia la direcci�n actual del coche
+	 * @param giro	Angulo de giro a sumar o restar de la direcci�n actual, en grados (-180 a +180)
+	 * 				Considerando positivo giro antihorario, negativo giro horario
+	 */
+	public void gira( double giro ) {
+		setDireccionActual( miDireccionActual + giro );
+	}
+	
+	/** Cambia la posici�n del coche dependiendo de su velocidad y direcci�n
+	 * @param tiempoDeMovimiento	Tiempo transcurrido, en segundos
+	 */
+	public void mueve( double tiempoDeMovimiento ) {
+		setPosX( posX + miVelocidad * Math.cos(miDireccionActual/180.0*Math.PI) * tiempoDeMovimiento );
+		setPosY( posY + miVelocidad * -Math.sin(miDireccionActual/180.0*Math.PI) * tiempoDeMovimiento );
+		// el negativo es porque en pantalla la Y crece hacia abajo y no hacia arriba
+	}
+	
 	@Override
 	public String toString() {
-		return "Coche [velocidad=" + velocidad + ", direccionActual=" + direccionActual + ", posX=" + posX + ", posY="
-				+ posY + ", nombrePiloto=" + nombrePiloto + "]";
+		return piloto + " (" + posX + "," + posY + ") - " +
+			   "Velocidad: " + miVelocidad + " ## Direcci�n: " + miDireccionActual; 
 	}
-	
-	// Paso 4
-	
-	public void Acelerar(double aceleracion) {
-		velocidad += aceleracion;
-	}
-	public void Girar(double giro) {
-		direccionActual += giro;
-		
-		if (direccionActual < 0) {
-			direccionActual += 360;
-		} else if (direccionActual >= 360) {
-			direccionActual -= 360;
-		}
-	}
-	public void Mover(double tiempoMover) {
-		double radianes = Math.toRadians(direccionActual);
-		posX = velocidad * tiempoMover * Math.cos(radianes);
-		posY = velocidad * tiempoMover * Math.sin(radianes);
-	
-	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-
 }

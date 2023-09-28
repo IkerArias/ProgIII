@@ -1,130 +1,188 @@
 package Practica0;
 
 import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.Timer;
+import java.awt.Color;
+import java.awt.event.*;
 
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 
-public class VentanaJuego extends JFrame { 
-	
-public VentanaJuego() {
-		
-		//Configuracion de la ventana
-		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setLocation(2000, 0);
-		setSize(400, 300);
-		
-		//Creamos el panel principal con Layout null y en el centro
-		JPanel panelPrincipal = new JPanel();
-		panelPrincipal.setLayout(null);
-		add(panelPrincipal, BorderLayout.CENTER);
-		
-		CocheJuego coche = new CocheJuego();
-        coche.setPosX(150); 
-        coche.setPosY(100); 
-        add(coche.getLabelCoche());
-        
-        JButton aceleraButton = new JButton("Acelera");
-        JButton frenaButton = new JButton("Frena");
-        JButton giraIzquierdaButton = new JButton("Gira Izq.");
-        JButton giraDerechaButton = new JButton("Gira Der.");
-        
-        aceleraButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                coche.Acelerar(5); // Acelerar el coche en 5 píxeles/segundo
-                System.out.println("Velocidad actual: " + coche.getVelocidad() + " pixels/segundo");
-            }
-        });
-        
-        frenaButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                coche.Acelerar(-5); // Decrementar la velocidad en 5 píxeles/segundo
-                System.out.println("Velocidad actual: " + coche.getVelocidad() + " pixels/segundo");
-            }
-        });
-        
-        giraIzquierdaButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                coche.Girar(-10); // Girar 10 grados a la izquierda
-                System.out.println("Dirección actual: " + coche.getDireccionActual() + " grados");
-            }
-        });
-        
-        giraDerechaButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                coche.Girar(10); // Girar 10 grados a la derecha
-                System.out.println("Dirección actual: " + coche.getDireccionActual() + " grados");
-            }
-        });
-        
-        
-        JPanel panelBotonera = new JPanel();
-        panelBotonera.add(aceleraButton);
-        panelBotonera.add(frenaButton);
-        panelBotonera.add(giraIzquierdaButton);
-        panelBotonera.add(giraDerechaButton);
-        add(panelBotonera, BorderLayout.SOUTH);
-		
-        Thread miHilo = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (true) {
-                    // Mueve el coche cada 40 milisegundos
-                    coche.Mover(40); 
+/** Clase principal de minijuego de coche para Pr�ctica 00 - Prog III
+ * Ventana del minijuego.
+ * @author Andoni Egu�luz
+ * Facultad de Ingenier�a - Universidad de Deusto (2014)
+ */
+public class VentanaJuego extends JFrame {
+	private static final long serialVersionUID = 1L;  // Para serializaci�n
+	JPanel pPrincipal;         // Panel del juego (layout nulo)
+	CocheJuego miCoche;        // Coche del juego
+	MiRunnable miHilo = null;  // Hilo del bucle principal de juego	
 
-                    // Actualiza la posición del JLabelCoche
-                    coche.getLabelCoche().setLocation((int) coche.getPosX(), (int) coche.getPosY());
-                    coche.getLabelCoche().repaint();
-
-                    // Espera 40 milisegundos antes de la siguiente iteración
-                    try {
-                        Thread.sleep(40);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        });
-        miHilo.start();
-    }
-
-	
-	//Metodo main
-	public static void main(String[] args) {
-	            VentanaJuego ventana = new VentanaJuego();
-	            
-	            
-	            Coche cochePrueba = new Coche();
-	            cochePrueba.setPosX(150);
-	            cochePrueba.setPosY(100);
-	            cochePrueba.setNombrePiloto("Iker");
-	            
-	            System.out.println(cochePrueba.toString());
-	            
-	            cochePrueba.Acelerar(15);
-	            cochePrueba.Girar(10);
-	            cochePrueba.Mover(4);
-	            
-	            LabelCoche cochelabel = new LabelCoche();
-	            ventana.add(cochelabel);
-	            
-	            
-	            
-	            ventana.setVisible(true);
-	            
+	/** Constructor de la ventana de juego. Crea y devuelve la ventana inicializada
+	 * sin coches dentro
+	 */
+	public VentanaJuego() {
+		// Liberaci�n de la ventana por defecto al cerrar
+		setDefaultCloseOperation( JFrame.DISPOSE_ON_CLOSE );
+		// Creaci�n contenedores y componentes
+		pPrincipal = new JPanel();
+		JPanel pBotonera = new JPanel();
+		JButton bAcelerar = new JButton( "Acelera" );
+		JButton bFrenar = new JButton( "Frena" );
+		JButton bGiraIzq = new JButton( "Gira Izq." );
+		JButton bGiraDer = new JButton( "Gira Der." );
+		// Formato y layouts
+		pPrincipal.setLayout( null );
+		pPrincipal.setBackground( Color.white );
+		// A�adido de componentes a contenedores
+		add( pPrincipal, BorderLayout.CENTER );
+		pBotonera.add( bAcelerar );
+		pBotonera.add( bFrenar );
+		pBotonera.add( bGiraIzq );
+		pBotonera.add( bGiraDer );
+		add( pBotonera, BorderLayout.SOUTH );
+		// Formato de ventana
+		setSize( 700, 500 );
+		// Escuchadores de botones
+		bAcelerar.addActionListener( new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (miCoche.getVelocidad()==0)
+					miCoche.acelera( +5 );
+				else 
+					miCoche.acelera( +5 );
+					// miCoche.acelera( miCoche.getVelocidad()*0.10 );   // para acelerar progresivo
+				System.out.println( "Nueva velocidad de coche: " + miCoche.getVelocidad() );
+			}
+		});
+		bFrenar.addActionListener( new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				miCoche.acelera( -5 );
+				System.out.println( "Nueva velocidad de coche: " + miCoche.getVelocidad() );
+			}
+		});
+		bGiraIzq.addActionListener( new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				miCoche.gira( +10 );
+				System.out.println( "Nueva direcci�n de coche: " + miCoche.getDireccionActual() );
+			}
+		});
+		bGiraDer.addActionListener( new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				miCoche.gira( -10 );
+				System.out.println( "Nueva direcci�n de coche: " + miCoche.getDireccionActual() );
+			}
+		});
+		// A�adido para que tambi�n se gestione por teclado con el KeyListener
+		pPrincipal.addKeyListener( new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				switch (e.getKeyCode()) {
+					case KeyEvent.VK_UP: {
+						miCoche.acelera( +5 );
+						break;
+					}
+					case KeyEvent.VK_DOWN: {
+						miCoche.acelera( -5 );
+						break;
+					}
+					case KeyEvent.VK_LEFT: {
+						miCoche.gira( +10 );
+						break;
+					}
+					case KeyEvent.VK_RIGHT: {
+						miCoche.gira( -10 );
+						break;
+					}
+				}
+			}
+		});
+		pPrincipal.setFocusable(true);
+		pPrincipal.requestFocus();
+		pPrincipal.addFocusListener( new FocusAdapter() {
+			@Override
+			public void focusLost(FocusEvent e) {
+				pPrincipal.requestFocus();
+			}
+		});
+		// Cierre del hilo al cierre de la ventana
+		addWindowListener( new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				if (miHilo!=null) miHilo.acaba();
+			}
+		});
 	}
-	         
+	
+	/** Crea un coche nuevo y lo a�ade a la ventana 
+	 * @param posX	Posici�n X de pixel del nuevo coche
+	 * @param posY	Posici�n Y de p�xel del nuevo coche
+	 */
+	public void creaCoche( int posX, int posY ) {
+		// Crear y a�adir el coche a la ventana
+		miCoche = new CocheJuego();
+		miCoche.setPosicion( posX, posY );
+		pPrincipal.add( miCoche.getGrafico() );
+	}
+	
+	/** Programa principal de la ventana de juego
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		// Crea y visibiliza la ventana con el coche
+		VentanaJuego miVentana = new VentanaJuego();
+		miVentana.creaCoche( 150, 100 );
+		miVentana.setVisible( true );
+		miVentana.miCoche.setPiloto( "Fernando Alonso" );
+		// Crea el hilo de movimiento del coche y lo lanza
+		miVentana.miHilo = miVentana.new MiRunnable();  // Sintaxis de new para clase interna
+		Thread nuevoHilo = new Thread( miVentana.miHilo );
+		nuevoHilo.start();
+	}
+	
+	/** Clase interna para implementaci�n de bucle principal del juego como un hilo
+	 * @author Andoni Egu�luz
+	 * Facultad de Ingenier�a - Universidad de Deusto (2014)
+	 */
+	class MiRunnable implements Runnable {
+		boolean sigo = true;
+		@Override
+		public void run() {
+			// Bucle principal forever hasta que se pare el juego...
+			while (sigo) {
+				// Mover coche
+				miCoche.mueve( 0.040 );
+				// Chequear choques
+				if (miCoche.getPosX() < -JLabelCoche.TAMANYO_COCHE/2 || miCoche.getPosX()>pPrincipal.getWidth()-JLabelCoche.TAMANYO_COCHE/2 ) {
+					// Espejo horizontal si choca en X
+					System.out.println( "Choca X");
+					double dir = miCoche.getDireccionActual();
+					dir = 180-dir;   // Rebote espejo sobre OY (complementario de 180)
+					if (dir < 0) dir = 360+dir;  // Correcci�n para mantenerlo en [0,360)
+					miCoche.setDireccionActual( dir );
+				}
+				// Se comprueba tanto X como Y porque podr�a a la vez chocar en las dos direcciones
+				if (miCoche.getPosY() < -JLabelCoche.TAMANYO_COCHE/2 || miCoche.getPosY()>pPrincipal.getHeight()-JLabelCoche.TAMANYO_COCHE/2 ) {
+					// Espejo vertical si choca en Y
+					System.out.println( "Choca Y");
+					double dir = miCoche.getDireccionActual();
+					dir = 360 - dir;  // Rebote espejo sobre OX (complementario de 360)
+					miCoche.setDireccionActual( dir );
+				}
+				// Dormir el hilo 40 milisegundos
+				try {
+					Thread.sleep( 40 );
+				} catch (Exception e) {
+				}
+			}
+		}
+		/** Ordena al hilo detenerse en cuanto sea posible
+		 */
+		public void acaba() {
+			sigo = false;
+		}
+	};
 	
 }
-	
-
-	
