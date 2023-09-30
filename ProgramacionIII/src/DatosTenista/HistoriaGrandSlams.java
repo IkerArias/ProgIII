@@ -1,175 +1,134 @@
 package DatosTenista;
 
-import java.io.IOException;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.io.BufferedReader;
-import java.io.FileReader;
+import java.util.TreeMap;
 
+/** Clase contenedora de datos históricos de grand slams
+ * Suponemos que no se repite nunca el nombre en dos tenistas diferentes
+ */
 public class HistoriaGrandSlams {
 
-	private ArrayList<Resultado> resultados;
-	private Map<String, Torneo> torneoPorNombre;
-	private Map<String, Torneo> torneosPorCodigo;
-	private Map<String, Tenista> tenistas;
+	private ArrayList<Resultado> lResultados; // Lista de todos los resultados históricos
+	private HashMap<String,Torneo> mapaTorneosNombre; // Mapa de todos los torneos, con clave nombre del torneo, para facilitar las búsquedas por torneo
+	private HashMap<Integer,Torneo> mapaTorneosCod; // Otro mapa de todos los torneos con clave código de torneo (1-4), para facilitar las búsquedas por código de torneo
+	private TreeMap<String,Tenista> mapaTenistas; // Mapa de tenistas, con clave nombre del tenista, para poder buscar rápido por el nombre de cada tenista
 	
-	public ArrayList<Resultado> getResultados() {
-		return resultados;
-	}
-	public void setResultados(ArrayList<Resultado> resultados) {
-		this.resultados = resultados;
-	}
-	public Map<String, Torneo> getTorneoPorNombre() {
-		return torneoPorNombre;
-	}
-	public void setTorneoPorNombre(Map<String, Torneo> torneoPorNombre) {
-		this.torneoPorNombre = torneoPorNombre;
-	}
-	public Map<String, Torneo> getTorneosPorCodigo() {
-		return torneosPorCodigo;
-	}
-	public void setTorneosPorCodigo(Map<String, Torneo> torneosPorCodigo) {
-		this.torneosPorCodigo = torneosPorCodigo;
-	}
-	public Map<String, Tenista> getTenistas() {
-		return tenistas;
-	}
-	public void setTenistas(Map<String, Tenista> tenistas) {
-		this.tenistas = tenistas;
-	}
-	
-	public HistoriaGrandSlams(ArrayList<Resultado> resultados, Map<String, Torneo> torneoPorNombre,
-			Map<String, Torneo> torneosPorCodigo, Map<String, Tenista> tenistas) {
-		super();
-		this.resultados = new ArrayList<>();
-		this.torneoPorNombre = new HashMap<>();
-		this.torneosPorCodigo = new HashMap<>();
-		this.tenistas = new HashMap<>();
+	/** Crea un objeto de datos históricos, partiendo de los datos existentes en ficheros
+	 * @param fTorneos	Fichero csv de torneos (debe existir y estar cargado con datos correctos)
+	 * @param fResultados	Fichero csv de resultados (ídem)
+	 */
+	public HistoriaGrandSlams( File fTorneos, File fResultados ) {
+		lResultados = new ArrayList<>();
+		mapaTorneosNombre = new HashMap<>();
+		mapaTorneosCod = new HashMap<>();
+		mapaTenistas = new TreeMap<>();
+		try {
+			// Proceso de carga de torneos
+			ArrayList<DatoTabular> l = DatoTabular.cargaCsv( fTorneos );
+			for (DatoTabular dato : l) {
+				Torneo torneo = new Torneo( dato );
+				mapaTorneosCod.put( torneo.getCodigo(), torneo );
+				mapaTorneosNombre.put( torneo.getNombre(), torneo );
+			}
+			// Proceso de carga de resultados
+			l = DatoTabular.cargaCsv( fResultados );
+			for (DatoTabular dato : l) {
+				Resultado resultado = new Resultado( dato );
+				anyadeResultado( resultado );
+			}
+		} catch (DatoException e) {
+			System.err.println( "No se han podido cargar correctamente los datos de inicio.");
+		}
 	}
 	
-
-	
-	public HashMap<String, Integer> calculaClasificacion(int anyoInicial, int anyoFinal) {
-        HashMap<String, Integer> clasificacion = new HashMap<>();
-        
-        for (Resultado resultado : resultados) {
-            int anioTorneo = resultado.getAño();
-            
-            if (anioTorneo >= anyoInicial && anioTorneo <= anyoFinal) {
-                String ganador = resultado.getGanador();
-                clasificacion.put(ganador, clasificacion.getOrDefault(ganador, 0) + 1);
-            }
-        }
-        
-        return clasificacion;
+	/** Devuelve los resultados
+	 * @return	Lista de resultados guardados
+	 */
+	public List<Resultado> getListaResultados() {
+		return lResultados;
 	}
 	
-	
-	
-	public void cargarTorneosDesdeCsv(String filePath) {
-        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
-            String line;
-            boolean header = true; // Flag para omitir la primera línea (cabecera)
-
-            while ((line = br.readLine()) != null) {
-                if (header) {
-                    header = false;
-                    continue; // Saltar la cabecera
-                }
-
-                String[] parts = line.split(",");
-                if (parts.length >= 3) {
-                    String codigo = parts[0].trim();
-                    String nombre = parts[1].trim();
-                    String ciudad = parts[2].trim();
-
-                    // Puedes agregar más campos del CSV según sea necesario
-
-                    Torneo torneo = new Torneo(Integer.parseInt(codigo), nombre, ciudad);
-                    // Agregar el torneo al mapa de torneos por nombre y código
-                    torneoPorNombre.put(nombre, torneo);
-                    torneosPorCodigo.put(codigo, torneo);
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-	
-	public void cargarTenistasDesdeCsv(String filePath) {
-        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
-            String line;
-            boolean header = true; // Flag para omitir la primera línea (cabecera)
-
-            while ((line = br.readLine()) != null) {
-                if (header) {
-                    header = false;
-                    continue; // Saltar la cabecera
-                }
-
-                String[] parts = line.split(",");
-                if (parts.length >= 2) {
-                    String nombre1 = parts[1].trim();
-                    String nacionalidad1 = parts[3].trim();
-                    String nombre2 = parts[4].trim();
-                    String nacionalidad2 = parts[6].trim();
-
-                    // Puedes agregar más campos del CSV según sea necesario
-
-                    Tenista tenista1 = new Tenista(nombre1, nacionalidad1, 0);
-                    Tenista tenista2 = new Tenista(nombre2, nacionalidad2, 0);
-                    // Agregar el tenista al mapa de tenistas por nombre
-                    if (!tenistas.containsKey(nombre1)) {
-                    	tenistas.put(nombre1, tenista1);
-                    }
-                    if (!tenistas.containsKey(nombre2)) {
-                    	tenistas.put(nombre2, tenista2);
-                    }
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-	
-	public void cargarResultadosDesdeCsv(String filePath) {
-        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
-            String line;
-            boolean header = true; // Flag para omitir la primera línea (cabecera)
-
-            while ((line = br.readLine()) != null) {
-                if (header) {
-                    header = false;
-                    continue; // Saltar la cabecera
-                }
-
-                String[] parts = line.split(",");
-                if (parts.length >= 7) {
-                    int anio = Integer.parseInt(parts[0].trim());
-                    String ganador = parts[1].trim();
-                    String subcampeon = parts[4].trim();
-                    int rankingGanador = Integer.parseInt(parts[2].trim());
-                    int rankingSubcampeon = Integer.parseInt(parts[5].trim());
-                    String resultadoFinal = parts[7].trim();
-
-                    // Puedes agregar más campos del CSV según sea necesario
-
-                    Resultado resultado = new Resultado("", anio, ganador, subcampeon, rankingGanador, rankingSubcampeon, resultadoFinal);
-                    // Agregar el resultado a la lista de resultados
-                    resultados.add(resultado);
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-	@Override
-	public String toString() {
-		return "HistoriaGrandSlams [resultados=" + resultados + ", torneoPorNombre=" + torneoPorNombre
-				+ ", torneosPorCodigo=" + torneosPorCodigo + ", tenistas=" + tenistas + "]";
+	/** Devuelve los torneos
+	 * @return	Mapa de torneos guardados
+	 */
+	public Map<Integer,Torneo> getMapaTorneos() {
+		return mapaTorneosCod;
 	}
 	
+	/** Devuelve los tenistas
+	 * @return	Mapa de tenistas guardados, con clave única nombre de tenista y valor objeto tenista
+	 */
+	public TreeMap<String,Tenista> getMapaTenistas() {
+		return mapaTenistas;
+	}
 	
+	/** Añade un nuevo resultado a la estructura, incorporando a los tenistas si procede
+	 * @param resultado	Resultado correcto a añadir
+	 */
+	public void anyadeResultado( Resultado resultado ) {
+		// Almacenar tenistas en el mapa e incrementar contador ganadores
+		anyadeTenista( resultado.getGanador(), resultado.getPaisGanador() );
+		mapaTenistas.get(resultado.getGanador()).incVictoriasGrandSlam();
+		anyadeTenista( resultado.getFinalista(), resultado.getPaisFinalista() );
+		// Almacenar resultados
+		lResultados.add( resultado );
+	}
 	
+	/** Añade un nuevo tenista a la estructura. Si el tenista ya existía no se modifica nada.
+	 * @param nombre	Nombre del tenista
+	 * @param pais	País del tenista
+	 */
+	public void anyadeTenista( String nombre, String pais ) {
+		if (!mapaTenistas.containsKey(nombre)) {
+			mapaTenistas.put( nombre, new Tenista( nombre, pais ) );
+		}
+	}
+	
+	/** Calcula el número de victorias de los jugadores en grand slams entre los años dados
+	 * @param anyoInicial	Año inicial (inclusive)
+	 * @param anyoFinal	Año final (inclusive)
+	 */
+	public void calculaClasificacion( int anyoInicial, int anyoFinal ) {
+		// Inicializamos contadores a 0
+		for (Tenista tenista : mapaTenistas.values()) {
+			tenista.resetVictoriasGrandSlam();
+		}
+		// Recalculamos contadores solo entre los años indicados
+		for (Resultado resultado : lResultados) {
+			if (resultado.getAnyo()>=anyoInicial && resultado.getAnyo()<=anyoFinal) {
+				mapaTenistas.get( resultado.getGanador() ).incVictoriasGrandSlam();
+			}
+		}
+	}
+	
+	/** Devuelve el primer año en el que hay resultados
+	 * @return	Año inicial
+	 */
+	public int getAnyoInicial() {
+		int ret = Integer.MAX_VALUE;
+		for (Resultado resultado : lResultados) {
+			if (resultado.getAnyo() < ret) {
+				ret = resultado.getAnyo();
+			}
+		}
+		return ret;
+	}
+	
+	/** Devuelve el último año en el que hay resultados
+	 * @return	Año final
+	 */
+	public int getAnyoFinal() {
+		int ret = Integer.MIN_VALUE;
+		for (Resultado resultado : lResultados) {
+			if (resultado.getAnyo() > ret) {
+				ret = resultado.getAnyo();
+			}
+		}
+		return ret;
+	}
+		
 }

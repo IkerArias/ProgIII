@@ -7,8 +7,8 @@ package Practica0;
 public class Coche {
 	protected double miVelocidad;  // Velocidad en pixels/segundo
 	protected double miDireccionActual;  // Direcci�n en la que estoy mirando en grados (de 0 a 360)
-	protected double posX;  // Posici�n en X (horizontal)
-	protected double posY;  // Posici�n en Y (vertical)
+	protected double posX;  // Posicion en X (horizontal)
+	protected double posY;  // Posicion en Y (vertical)
 	protected String piloto;  // Nombre de piloto
 	
 	// Constructores

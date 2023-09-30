@@ -1,51 +1,44 @@
 package DatosTenista;
 
-public class Torneo {
+/** Clase de torneo grand slam
+ */
+public class Torneo extends DatoTabular {
+
+	/** Construye un nuevo torneo partiendo de un dato
+	 * @param dato	Dato de origen. Debe incluir los siguientes tres datos en este orden: Código (int), Nombre (string), Ciudad (string)
+	 * @throws DatoException	Si los datos no responden a los necesitados
+	 */
+	public Torneo( DatoTabular dato ) throws DatoException {
+		super( dato.lCabeceras, dato.lTipos, dato.lValores );
+		if (getNumCampos()!=3 || getTipo(0)!=Integer.class || getTipo(1)!=String.class || getTipo(2)!=String.class) {
+			throw new DatoException( "Error en tipos incorrectos de dato torneo" );
+		}
+	}
 	
-	private int codigo;
-	private String nombre;
-	private String ciudad;
-	
-	
+	/** Devuelve el código
+	 * @return	Código de torneo (1-4)
+	 */
 	public int getCodigo() {
-		return codigo;
+		return ((Integer) getValor(0));
 	}
-	public void setCodigo(int codigo) {
-		this.codigo = codigo;
-	}
+	
+	/** Devuelve el nombre
+	 * @return	Nombre de torneo
+	 */
 	public String getNombre() {
-		return nombre;
+		return ((String) getValor(1));
 	}
-	public void setNombre(String nombre) {
-		this.nombre = nombre;
-	}
+	
+	/** Devuelve la ciudad
+	 * @return	Ciudad del torneo
+	 */
 	public String getCiudad() {
-		return ciudad;
+		return ((String) getValor(2));
 	}
-	public void setCiudad(String ciudad) {
-		this.ciudad = ciudad;
-	}
-	
-	public Torneo(int codigo, String nombre, String ciudad) {
-		super();
-		this.codigo = codigo;
-		this.nombre = nombre;
-		this.ciudad = ciudad;
-	}
-	
-	public Torneo() {
-		super();
-		this.codigo = 0;
-		this.nombre = "";
-		this.ciudad = "";
-	}
-	
+
 	@Override
 	public String toString() {
-		return "Torneo [codigo=" + codigo + ", nombre=" + nombre + ", ciudad=" + ciudad + "]";
+		return getNombre();
 	}
 	
-	
-	
-
 }

@@ -1,32 +1,24 @@
 package DatosTenista;
 
-import java.util.HashMap;
+import java.io.File;
 
+/** Programa principal gestión resultados grand slams
+ */
 public class Main {
-
+	/** Método principal - carga los datos de ficheros por defecto y lanza la ventana de visualización de tablas de datos
+	 * Ficheros por defecto:
+	 *  Resultados: src/ud/prog3/pr00/datos/Grand Slam Championships, Champion vs Runner-up, Men's Singles, 1968-2021.csv
+	 *   (Si existe el fichero resultados.csv en la carpeta por defecto, se carga en su lugar)
+	 *	Torneos: src/ud/prog3/pr00/datos/torneos.csv
+	 * @param args	No utilizado
+	 */
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		
-		HistoriaGrandSlams historia = new HistoriaGrandSlams(null, null, null, null);
-		
-		historia.cargarTorneosDesdeCsv("/Users/ikerariasmartinez/Downloads/GrandSlam.csv");
-	    historia.cargarTenistasDesdeCsv("/Users/ikerariasmartinez/Downloads/Australian Open Championships, Champion vs Runner-up, Men's Singles,1969 - 2021.csv");
-	    historia.cargarResultadosDesdeCsv("/Users/ikerariasmartinez/Downloads/Australian Open Championships, Champion vs Runner-up, Men's Singles,1969 - 2021.csv");
-	  
-	    
-	    HashMap<String, Integer> clasificacion = historia.calculaClasificacion(2000, 2020);
-	    
-	    System.out.println("Clasificación de victorias en Grand Slams entre 2000 y 2020:");
-	    for (HashMap.Entry<String, Integer> entry : clasificacion.entrySet()) {
-	        System.out.println(entry.getKey() + ": " + entry.getValue() + " victorias");
-	    }
-	    
-	    System.out.println(historia.toString());
-	    System.out.println(historia.getTenistas().toString());
-	    System.out.println(historia.getResultados().toString());
-	    System.out.println(historia.getTorneoPorNombre().toString());
-	    System.out.println(historia.getTorneosPorCodigo().toString());
-
+		File fResultados = new File( "resultados.csv");
+		if (!fResultados.exists()) {  // Si no hay un fichero nuevo guardado, se usa el inicial
+			fResultados = new File( "src/ud/prog3/pr00/datos/Grand Slam Championships, Champion vs Runner-up, Men's Singles, 1968-2021.csv" );
+		}
+		HistoriaGrandSlams hgs = new HistoriaGrandSlams( new File( "src/ud/prog3/pr00/datos/torneos.csv"), fResultados );
+		VentanaGrandSlam v = new VentanaGrandSlam( hgs );
+		v.setVisible( true );
 	}
-
 }
