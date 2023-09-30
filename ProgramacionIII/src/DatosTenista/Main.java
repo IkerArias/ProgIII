@@ -15,9 +15,9 @@ public class Main {
 	public static void main(String[] args) {
 		File fResultados = new File( "resultados.csv");
 		if (!fResultados.exists()) {  // Si no hay un fichero nuevo guardado, se usa el inicial
-			fResultados = new File( "src/ud/prog3/pr00/datos/Grand Slam Championships, Champion vs Runner-up, Men's Singles, 1968-2021.csv" );
+			fResultados = new File( "/Users/ikerariasmartinez/git/repository/ProgramacionIII/src/DatosTenista/Grand Slam Championships, Champion vs Runner-up, Men's Singles, 1968-2021.csv" );
 		}
-		HistoriaGrandSlams hgs = new HistoriaGrandSlams( new File( "src/ud/prog3/pr00/datos/torneos.csv"), fResultados );
+		HistoriaGrandSlams hgs = new HistoriaGrandSlams( new File( "/Users/ikerariasmartinez/git/repository/ProgramacionIII/src/DatosTenista/torneos.csv"), fResultados );
 		VentanaGrandSlam v = new VentanaGrandSlam( hgs );
 		v.setVisible( true );
 	}

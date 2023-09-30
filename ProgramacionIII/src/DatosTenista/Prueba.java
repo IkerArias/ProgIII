@@ -9,7 +9,7 @@ public class Prueba {
 
 	public static void main(String[] args) {
 		System.out.println( "Prueba lectura csv: ");
-		ArrayList<DatoTabular> l = DatoTabular.cargaCsv( new File( "src/ud/prog3/pr00/datos/Grand Slam Championships, Champion vs Runner-up, Men's Singles, 1968-2021.csv") );
+		ArrayList<DatoTabular> l = DatoTabular.cargaCsv( new File( "/Users/ikerariasmartinez/git/repository/ProgramacionIII/src/DatosTenista/Grand Slam Championships, Champion vs Runner-up, Men's Singles, 1968-2021.csv") );
 		for (DatoTabular dato : l) {
 			System.out.println( dato );
 		}
@@ -17,7 +17,7 @@ public class Prueba {
 		DatoTabular.guardaCsv( l, new File( "salida.csv") );
 		
 		System.out.println( "Prueba lectura torneos: ");
-		l = DatoTabular.cargaCsv( new File( "src/ud/prog3/pr00/datos/torneos.csv") );
+		l = DatoTabular.cargaCsv( new File( "/Users/ikerariasmartinez/git/repository/ProgramacionIII/src/DatosTenista/torneos.csv") );
 		for (DatoTabular dato : l) {
 			System.out.println( dato );
 		}
