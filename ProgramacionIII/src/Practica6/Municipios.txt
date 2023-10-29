@@ -1,0 +1,29 @@
+1	Madrid	3286662	Madrid	Comunidad de Madrid
+2	Barcelona	1636193	Barcelona	Catalunia
+3	Valencia	792492	Valencia	Comunidad Valenciana
+4	Sevilla	681998	Sevilla	Andalucia
+5	Zaragoza	673010	Zaragoza	Aragon
+6	Malaga	579076	Malaga	Andalucia
+7	Murcia	462979	Murcia	Murcia
+8	Mallorca	415940	Islas Baleares	Islas Baleares
+9	Las Palmas	400809	Las Palmas	Canarias
+10	Bilbao	344127	Vizcaya	Pais Vasco
+11	Alicante	338577	Alicante	Comunidad Valenciana
+12	Cordoba	319515	Cordoba	Andalucia
+13	Valladolid	295639	Valladolid	Castilla y Leon
+14	Vigo	292374	Pontevedra	Galicia
+15	Gijon	267706	Asturias	Asturias
+16	Hospitalet	250678	Barcelona	Catalunia
+17	La Coruna	244700	La Coruna	Galicia
+18	Vitoria	253672	Alava	Pais Vasco
+19	Elche	235580	Alicante	Comunidad Valenciana
+20	Granada	228682	Granada	Andalucia
+21	Tarrasa	241143	Barelona	Catalunia
+22	Badalona	223506	Barcelona	Catalunia
+23	Cartagena	216961	Murcia	Murcia
+24	Sabadell	216760	Barcelona	Catalunia
+25	Oviedo	215167	Asturias	Asturias
+26	Jerez	212730	Cadiz	Andalucia
+27	Mostoles	208761	Madrid	Comunidad de Madrid
+28	Tenerife	208688	Tenerife	Canarias
+29	Pamplona	203418	Navarra	Navarra
